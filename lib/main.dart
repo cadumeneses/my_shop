@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:my_shop/models/cart.dart';
 import 'package:my_shop/models/product_list.dart';
 import 'package:my_shop/pages/cart_page.dart';
-import 'package:my_shop/pages/counter_page.dart';
+import 'package:my_shop/pages/product_detail_page.dart';
 import 'package:my_shop/pages/products_overview_page.dart';
 import 'package:my_shop/utils/app_routes.dart';
 import 'package:provider/provider.dart';
@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
                 )),
         home: ProductsOverviewPage(),
         routes: {
-          AppRoutes.productDetail: (ctx) => const CounterPage(),
+          AppRoutes.productDetail: (ctx) => const ProductDetailPage(),
           AppRoutes.cart: (ctx) => const CartPage(),
         },
         debugShowCheckedModeBanner: false,
