@@ -3,6 +3,7 @@ import 'package:my_shop/components/cart_item.dart';
 import 'package:provider/provider.dart';
 
 import '../models/cart.dart';
+import '../models/order_list.dart';
 
 class CartPage extends StatelessWidget {
   const CartPage({super.key});
@@ -43,7 +44,11 @@ class CartPage extends StatelessWidget {
                   ),
                   const Spacer(),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Provider.of<OrderList>(context, listen: false)
+                          .addOrder(cart);
+                      cart.clear();
+                    },
                     child: Text(
                       'COMPRAR',
                       style: TextStyle(
