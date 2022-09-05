@@ -14,12 +14,12 @@ class CartPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Carrinho de compras'),
+        title: const Text('Shopping cart'),
       ),
       body: Column(
         children: [
           Card(
-            margin: const EdgeInsets.all(25),
+            margin: const EdgeInsets.symmetric(vertical: 25, horizontal: 15),
             child: Padding(
               padding: const EdgeInsets.all(10),
               child: Row(
