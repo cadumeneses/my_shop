@@ -3,6 +3,7 @@ import 'package:my_shop/models/cart.dart';
 import 'package:my_shop/models/order_list.dart';
 import 'package:my_shop/models/product_list.dart';
 import 'package:my_shop/pages/cart_page.dart';
+import 'package:my_shop/pages/orders_page.dart';
 import 'package:my_shop/pages/product_detail_page.dart';
 import 'package:my_shop/pages/products_overview_page.dart';
 import 'package:my_shop/utils/app_routes.dart';
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => Cart(),
         ),
-         ChangeNotifierProvider(
+        ChangeNotifierProvider(
           create: (_) => OrderList(),
         ),
       ],
@@ -41,10 +42,12 @@ class MyApp extends StatelessWidget {
                     color: Colors.white,
                   ),
                 )),
-        home: const ProductsOverviewPage(),
+        // home: const ProductsOverviewPage(),
         routes: {
+          AppRoutes.home: (ctx) => const ProductsOverviewPage(),
           AppRoutes.productDetail: (ctx) => const ProductDetailPage(),
           AppRoutes.cart: (ctx) => const CartPage(),
+          AppRoutes.orders: (ctx) => const OrdersPage(),
         },
         debugShowCheckedModeBanner: false,
       ),
