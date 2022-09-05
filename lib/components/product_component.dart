@@ -1,24 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:my_shop/pages/product_detail_page.dart';
 import 'package:my_shop/utils/app_routes.dart';
+import 'package:provider/provider.dart';
 
 import '../models/product.dart';
 
 class ProductComponent extends StatelessWidget {
-  final Product product;
-
-  const ProductComponent({required this.product, super.key});
+  const ProductComponent({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final product = Provider.of<Product>(context);
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: GridTile(
         footer: GridTileBar(
           backgroundColor: Colors.black54,
           leading: IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.favorite),
+            onPressed: () {
+              product.toggleFavorite();
+            },
+            icon: Icon(
+              product.isFavorite ? Icons.favorite : Icons.favorite_border,
+            ),
             color: Theme.of(context).colorScheme.secondary,
           ),
           title: Text(
@@ -33,7 +37,8 @@ class ProductComponent extends StatelessWidget {
         ),
         child: GestureDetector(
           onTap: () {
-            Navigator.of(context).pushNamed(AppRoutes.productDetail, arguments: product);
+            Navigator.of(context)
+                .pushNamed(AppRoutes.productDetail, arguments: product);
           },
           child: Image.network(
             product.imageUrl,
