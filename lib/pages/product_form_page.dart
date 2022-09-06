@@ -83,7 +83,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
         listen: false,
       ).saveProduct(_formData);
     } catch (e) {
-      showDialog<void>(
+      await showDialog<void>(
         context: context,
         builder: (ctx) => AlertDialog(
           title: const Text('An error has occurred!'),
