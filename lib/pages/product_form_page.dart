@@ -1,6 +1,6 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
-import '../models/product.dart';
+import 'package:my_shop/models/product_list.dart';
+import 'package:provider/provider.dart';
 
 class ProductFormPage extends StatefulWidget {
   const ProductFormPage({super.key});
@@ -51,13 +51,12 @@ class _ProductFormPageState extends State<ProductFormPage> {
     }
 
     _formKey.currentState?.save();
-    final newProduct = Product(
-      id: Random().nextDouble().toString(),
-      title: _formData['name'] as String,
-      price: _formData['price'] as double,
-      description: _formData['description'] as String,
-      imageUrl: _formData['imageUrl'] as String,
-    );
+
+    Provider.of<ProductList>(
+      context,
+      listen: false,
+    ).addProductFormData(_formData);
+    Navigator.of(context).pop();
   }
 
   @override
@@ -170,9 +169,9 @@ class _ProductFormPageState extends State<ProductFormPage> {
                           _formData['imageUrl'] = imageUrl ?? '',
                       validator: (_imageUrl) {
                         final imageUrl = _imageUrl ?? '';
-                        if (isValidImageUrl(imageUrl)) {
-                          return 'Insert a valid url';
-                        }
+                        // if (isValidImageUrl(imageUrl)) {
+                        //   return 'Insert a valid url';
+                        // }
 
                         return null;
                       },
