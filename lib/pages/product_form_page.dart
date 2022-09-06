@@ -84,7 +84,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create Product'),
+        title: const Text('Form Product'),
         actions: [
           IconButton(
             onPressed: _submitForm,
