@@ -7,10 +7,9 @@ import 'package:my_shop/data/dummy_data.dart';
 import 'package:my_shop/models/product.dart';
 
 class ProductList with ChangeNotifier {
-  final _baseUrl =
-      'https://my-shop-with-flutter-backend-default-rtdb.firebaseio.com/';
-
-  final List<Product> _items = dummyProducts;
+  final _url =
+      'https://my-shop-with-flutter-backend-default-rtdb.firebaseio.com/products.json';
+  final List<Product> _items = [];
 
   List<Product> get items => [..._items];
 
@@ -19,6 +18,25 @@ class ProductList with ChangeNotifier {
 
   int get itemsCount {
     return _items.length;
+  }
+
+  Future<void> loadProducts() async {
+    _items.clear();
+    final response = await http.get(Uri.parse(_url));
+    Map<String, dynamic> data = jsonDecode(response.body);
+    data.forEach((productId, productData) {
+      _items.add(
+        Product(
+          id: productId,
+          title: productData['title'],
+          description: productData['description'],
+          imageUrl: productData['imageUrl'],
+          price: productData['price'],
+          isFavorite: productData['isFavorite'],
+        ),
+      );
+    });
+    notifyListeners();
   }
 
   Future<void> saveProduct(Map<String, Object> data) {
@@ -41,7 +59,7 @@ class ProductList with ChangeNotifier {
 
   Future<void> addProduct(Product product) async {
     final response = await http.post(
-      Uri.parse('$_baseUrl/products.json'),
+      Uri.parse(_url),
       body: jsonEncode(
         {
           "title": product.title,
