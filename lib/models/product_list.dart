@@ -10,7 +10,7 @@ class ProductList with ChangeNotifier {
   final _baseUrl =
       'https://my-shop-with-flutter-backend-default-rtdb.firebaseio.com/';
 
-  List<Product> _items = dummyProducts;
+  final List<Product> _items = dummyProducts;
 
   List<Product> get items => [..._items];
 
@@ -39,8 +39,8 @@ class ProductList with ChangeNotifier {
     }
   }
 
-  Future<void> addProduct(Product product) {
-    final fut = http.post(
+  Future<void> addProduct(Product product) async {
+    final response = await http.post(
       Uri.parse('$_baseUrl/products.json'),
       body: jsonEncode(
         {
@@ -52,17 +52,17 @@ class ProductList with ChangeNotifier {
         },
       ),
     );
-    return fut.then<void>((response) {
-      final id = jsonDecode(response.body)['name'];
-      _items.add(Product(
-        id: id,
-        title: product.title,
-        description: product.description,
-        imageUrl: product.imageUrl,
-        price: product.price,
-      ));
-      notifyListeners();
-    });
+
+    final id = jsonDecode(response.body)['name'];
+    _items.add(Product(
+      id: id,
+      title: product.title,
+      description: product.description,
+      imageUrl: product.imageUrl,
+      price: product.price,
+      isFavorite: product.isFavorite,
+    ));
+    notifyListeners();
   }
 
   Future<void> updateProduct(Product product) {
