@@ -1,4 +1,6 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
+import '../models/product.dart';
 
 class ProductFormPage extends StatefulWidget {
   const ProductFormPage({super.key});
@@ -12,6 +14,9 @@ class _ProductFormPageState extends State<ProductFormPage> {
   final _priceFocus = FocusNode();
   final _descriptionFocus = FocusNode();
   final _imgUrlController = TextEditingController();
+
+  final _formKey = GlobalKey<FormState>();
+  final _formData = Map<String, Object>();
 
   @override
   void initState() {
@@ -28,8 +33,31 @@ class _ProductFormPageState extends State<ProductFormPage> {
     _imgUrlFocus.dispose();
   }
 
+  bool isValidImageUrl(String url) {
+    bool isValidUrl = Uri.tryParse(url)?.hasAbsolutePath ?? false;
+
+    return isValidUrl;
+  }
+
   void updateImg() {
     setState(() {});
+  }
+
+  void _submitForm() {
+    final isValid = _formKey.currentState?.validate() ?? false;
+
+    if (!isValid) {
+      return;
+    }
+
+    _formKey.currentState?.save();
+    final newProduct = Product(
+      id: Random().nextDouble().toString(),
+      title: _formData['name'] as String,
+      price: _formData['price'] as double,
+      description: _formData['description'] as String,
+      imageUrl: _formData['imageUrl'] as String,
+    );
   }
 
   @override
@@ -37,10 +65,17 @@ class _ProductFormPageState extends State<ProductFormPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Create Product'),
+        actions: [
+          IconButton(
+            onPressed: _submitForm,
+            icon: const Icon(Icons.save),
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(15),
         child: Form(
+          key: _formKey,
           child: ListView(
             children: [
               TextFormField(
@@ -50,6 +85,20 @@ class _ProductFormPageState extends State<ProductFormPage> {
                 textInputAction: TextInputAction.next,
                 onFieldSubmitted: (_) {
                   FocusScope.of(context).requestFocus(_priceFocus);
+                },
+                onSaved: (title) => _formData['title'] = title ?? '',
+                validator: (_name) {
+                  final name = _name ?? '';
+
+                  if (name.trim().isEmpty) {
+                    return 'The name is invalid!';
+                  }
+
+                  if (name.trim().length < 3) {
+                    return 'The name need min 3 letters';
+                  }
+
+                  return null;
                 },
               ),
               TextFormField(
@@ -64,6 +113,18 @@ class _ProductFormPageState extends State<ProductFormPage> {
                 onFieldSubmitted: (_) {
                   FocusScope.of(context).requestFocus(_descriptionFocus);
                 },
+                onSaved: (price) =>
+                    _formData['price'] = double.parse(price ?? '0'),
+                validator: (_price) {
+                  final priceString = _price ?? '0';
+                  final price = double.tryParse(priceString) ?? -1;
+
+                  if (price <= 0) {
+                    return 'Insert a valid price';
+                  }
+
+                  return null;
+                },
               ),
               TextFormField(
                 decoration: const InputDecoration(
@@ -75,6 +136,21 @@ class _ProductFormPageState extends State<ProductFormPage> {
                 maxLines: 3,
                 onFieldSubmitted: (_) {
                   FocusScope.of(context).requestFocus(_imgUrlFocus);
+                },
+                onSaved: (description) =>
+                    _formData['description'] = description ?? '',
+                validator: (_description) {
+                  final description = _description ?? '';
+
+                  if (description.trim().isEmpty) {
+                    return 'The name is invalid!';
+                  }
+
+                  if (description.trim().length < 10) {
+                    return 'The name need min 3 letters';
+                  }
+
+                  return null;
                 },
               ),
               Row(
@@ -89,6 +165,17 @@ class _ProductFormPageState extends State<ProductFormPage> {
                       ),
                       textInputAction: TextInputAction.done,
                       keyboardType: TextInputType.url,
+                      onFieldSubmitted: (_) => _submitForm(),
+                      onSaved: (imageUrl) =>
+                          _formData['imageUrl'] = imageUrl ?? '',
+                      validator: (_imageUrl) {
+                        final imageUrl = _imageUrl ?? '';
+                        if (isValidImageUrl(imageUrl)) {
+                          return 'Insert a valid url';
+                        }
+
+                        return null;
+                      },
                     ),
                   ),
                   Container(
@@ -109,7 +196,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
                               _imgUrlController.text,
                               fit: BoxFit.cover,
                               height: 100,
-                    width: 100,
+                              width: 100,
                             ),
                           ),
                   )
