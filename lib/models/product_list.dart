@@ -37,7 +37,6 @@ class ProductList with ChangeNotifier {
     } else {
       return addProduct(product);
     }
-
   }
 
   Future<void> addProduct(Product product) {
