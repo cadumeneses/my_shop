@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_shop/models/product.dart';
 import 'package:my_shop/models/product_list.dart';
 import 'package:provider/provider.dart';
 
@@ -22,6 +23,26 @@ class _ProductFormPageState extends State<ProductFormPage> {
   void initState() {
     super.initState();
     _imgUrlFocus.addListener(updateImg);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (_formData.isEmpty) {
+      final argument = ModalRoute.of(context)?.settings.arguments;
+
+      if (argument != null) {
+        final product = argument as Product;
+        _formData['id'] = product.id;
+        _formData['title'] = product.title;
+        _formData['price'] = product.price;
+        _formData['description'] = product.description;
+        _formData['imageUrl'] = product.imageUrl;
+
+        _imgUrlController.text = product.imageUrl;
+      }
+    }
   }
 
   @override
@@ -55,7 +76,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
     Provider.of<ProductList>(
       context,
       listen: false,
-    ).addProductFormData(_formData);
+    ).saveProduct(_formData);
     Navigator.of(context).pop();
   }
 
@@ -78,6 +99,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
           child: ListView(
             children: [
               TextFormField(
+                initialValue: _formData['title']?.toString(),
                 decoration: const InputDecoration(
                   labelText: 'Name',
                 ),
@@ -101,6 +123,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
                 },
               ),
               TextFormField(
+                initialValue: _formData['price']?.toString(),
                 decoration: const InputDecoration(
                   labelText: 'Price',
                 ),
@@ -126,6 +149,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
                 },
               ),
               TextFormField(
+                initialValue: _formData['description']?.toString(),
                 decoration: const InputDecoration(
                   labelText: 'Description',
                 ),
