@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_shop/exceptions/http_exceptions.dart';
 import 'package:my_shop/models/product.dart';
 import 'package:my_shop/models/product_list.dart';
 import 'package:my_shop/utils/app_routes.dart';
@@ -10,6 +11,8 @@ class ProductItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final msg = ScaffoldMessenger.of(context);
+
     return ListTile(
       leading: CircleAvatar(
         backgroundImage: NetworkImage(product.imageUrl),
@@ -39,7 +42,7 @@ class ProductItem extends StatelessWidget {
                     actions: [
                       TextButton(
                         onPressed: () {
-                          Navigator.of(context).pop();
+                          Navigator.of(context).pop(false);
                         },
                         child: const Text('Cancel'),
                       ),
@@ -49,13 +52,28 @@ class ProductItem extends StatelessWidget {
                             context,
                             listen: false,
                           ).deleteProduct(product);
-                          Navigator.of(context).pop();
+                          Navigator.of(context).pop(true);
                         },
                         child: const Text('Yes'),
                       )
                     ],
                   ),
-                );
+                ).then((value) async {
+                  if (value ?? false) {
+                    try {
+                      await Provider.of<ProductList>(
+                        context,
+                        listen: false,
+                      ).deleteProduct(product);
+                    } on HttpException catch (error) {
+                      msg.showSnackBar(
+                        SnackBar(
+                          content: Text(error.toString()),
+                        ),
+                      );
+                    }
+                  }
+                });
               },
               color: Colors.red,
               icon: const Icon(Icons.delete),

@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:my_shop/data/dummy_data.dart';
+import 'package:my_shop/exceptions/http_exceptions.dart';
 import 'package:my_shop/models/product.dart';
 
 class ProductList with ChangeNotifier {
@@ -102,11 +103,24 @@ class ProductList with ChangeNotifier {
     }
   }
 
-  void deleteProduct(Product product) {
+  Future<void> deleteProduct(Product product) async {
     int index = _items.indexWhere((p) => p.id == product.id);
     if (index >= 0) {
-      _items.removeWhere((p) => p.id == product.id);
+      final product = _items[index];
+      _items.remove(product);
       notifyListeners();
+
+      final response =
+          await http.delete(Uri.parse('$_baseUrl/${product.id}.json'));
+
+      if (response.statusCode >= 400) {
+        _items.insert(index, product);
+        notifyListeners();
+        throw HttpException(
+          msg: 'Do not is possible remove this product!',
+          statusCode: response.statusCode,
+        );
+      }
     }
   }
 }
