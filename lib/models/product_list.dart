@@ -1,15 +1,15 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:my_shop/data/dummy_data.dart';
 import 'package:my_shop/exceptions/http_exceptions.dart';
 import 'package:my_shop/models/product.dart';
+import 'package:my_shop/utils/constants.dart';
 
 class ProductList with ChangeNotifier {
-  final _baseUrl =
-      'https://my-shop-with-flutter-backend-default-rtdb.firebaseio.com/products';
+  Dio dio = Dio();
   final List<Product> _items = [];
 
   List<Product> get items => [..._items];
@@ -22,22 +22,26 @@ class ProductList with ChangeNotifier {
   }
 
   Future<void> loadProducts() async {
-    _items.clear();
-    final response = await http.get(Uri.parse('$_baseUrl.json'));
-    Map<String, dynamic> data = jsonDecode(response.body);
-    data.forEach((productId, productData) {
-      _items.add(
-        Product(
-          id: productId,
-          title: productData['title'],
-          description: productData['description'],
-          imageUrl: productData['imageUrl'],
-          price: productData['price'],
-          isFavorite: productData['isFavorite'],
-        ),
-      );
-    });
-    notifyListeners();
+    try {
+      _items.clear();
+      final response = await dio.get('${Constants.productBaseUrl}.json');
+      Map<String, dynamic> data = jsonDecode(response.data);
+      return data.forEach((productId, productData) {
+        _items.add(
+          Product(
+            id: productId,
+            title: productData['title'],
+            description: productData['description'],
+            imageUrl: productData['imageUrl'],
+            price: productData['price'],
+            isFavorite: productData['isFavorite'],
+          ),
+        );
+        notifyListeners();
+      });
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future<void> saveProduct(Map<String, Object> data) {
@@ -59,9 +63,9 @@ class ProductList with ChangeNotifier {
   }
 
   Future<void> addProduct(Product product) async {
-    final response = await http.post(
-      Uri.parse('$_baseUrl.json'),
-      body: jsonEncode(
+    final response = await dio.post(
+      ('${Constants.productBaseUrl}.json'),
+      data: jsonEncode(
         {
           "title": product.title,
           "description": product.description,
@@ -72,7 +76,7 @@ class ProductList with ChangeNotifier {
       ),
     );
 
-    final id = jsonDecode(response.body)['name'];
+    final id = jsonDecode(response.data)['name'];
     _items.add(Product(
       id: id,
       title: product.title,
@@ -87,9 +91,9 @@ class ProductList with ChangeNotifier {
   Future<void> updateProduct(Product product) async {
     int index = _items.indexWhere((p) => p.id == product.id);
     if (index >= 0) {
-      await http.patch(
-        Uri.parse('$_baseUrl/${product.id}.json'),
-        body: jsonEncode(
+      await dio.patch(
+        '${Constants.productBaseUrl}/${product.id}.json',
+        data: jsonEncode(
           {
             "title": product.title,
             "description": product.description,
@@ -111,14 +115,14 @@ class ProductList with ChangeNotifier {
       notifyListeners();
 
       final response =
-          await http.delete(Uri.parse('$_baseUrl/${product.id}.json'));
+          await dio.delete('${Constants.productBaseUrl}/${product.id}.json');
 
-      if (response.statusCode >= 400) {
+      if (response.statusCode! >= 400) {
         _items.insert(index, product);
         notifyListeners();
         throw HttpException(
           msg: 'Do not is possible remove this product!',
-          statusCode: response.statusCode,
+          statusCode: response.data,
         );
       }
     }

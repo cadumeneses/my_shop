@@ -29,11 +29,7 @@ class _ProductsOverviewPageState extends State<ProductsOverviewPage> {
     Provider.of<ProductList>(
       context,
       listen: false,
-    ).loadProducts().then((value) {
-      setState(() {
-        _isLoading = false;
-      });
-    });
+    );
   }
 
   @override

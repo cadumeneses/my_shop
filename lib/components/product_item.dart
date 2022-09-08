@@ -36,7 +36,7 @@ class ProductItem extends StatelessWidget {
               onPressed: () {
                 showDialog(
                   context: context,
-                  builder: (context) => AlertDialog(
+                  builder: (ctx) => AlertDialog(
                     title: Text('Delect product'),
                     content: const Text("I'ts Ok?"),
                     actions: [
@@ -48,32 +48,13 @@ class ProductItem extends StatelessWidget {
                       ),
                       TextButton(
                         onPressed: () {
-                          Provider.of<ProductList>(
-                            context,
-                            listen: false,
-                          ).deleteProduct(product);
                           Navigator.of(context).pop(true);
                         },
                         child: const Text('Yes'),
                       )
                     ],
                   ),
-                ).then((value) async {
-                  if (value ?? false) {
-                    try {
-                      await Provider.of<ProductList>(
-                        context,
-                        listen: false,
-                      ).deleteProduct(product);
-                    } on HttpException catch (error) {
-                      msg.showSnackBar(
-                        SnackBar(
-                          content: Text(error.toString()),
-                        ),
-                      );
-                    }
-                  }
-                });
+                );
               },
               color: Colors.red,
               icon: const Icon(Icons.delete),
