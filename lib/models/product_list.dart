@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:my_shop/exceptions/http_exceptions.dart';
 import 'package:my_shop/models/product.dart';
 import 'package:my_shop/utils/constants.dart';
 
