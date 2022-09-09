@@ -1,7 +1,6 @@
-import 'dart:math';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:my_shop/models/cart_item.dart';
 import 'package:my_shop/models/order.dart';
 
 import '../utils/constants.dart';
@@ -17,6 +16,32 @@ class OrderList with ChangeNotifier {
 
   int get itemsCount {
     return _items.length;
+  }
+
+  Future<void> loadOrders() async {
+    _items.clear();
+    final response = await dio.get('${Constants.orderBaseUrl}.json');
+    print(response.data);
+    Map<String, dynamic> data = response.data;
+    data.forEach((orderId, orderData) {
+      _items.add(
+        Order(
+          id: orderId,
+          total: orderData['total'],
+          products: (orderData['products'] as List<dynamic>).map((e) {
+            return CartItem(
+              id: e['id'],
+              price: e['price'],
+              productId: e['productId'],
+              quantity: e['quantity'],
+              title: e['title'],
+            );
+          }).toList(),
+          date: DateTime.parse(orderData['date']),
+        ),
+      );
+      notifyListeners();
+    });
   }
 
   Future<void> addOrder(Cart cart) async {
