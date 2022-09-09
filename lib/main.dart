@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:my_shop/models/cart.dart';
 import 'package:my_shop/models/order_list.dart';
@@ -11,7 +14,20 @@ import 'package:my_shop/pages/products_overview_page.dart';
 import 'package:my_shop/utils/app_routes.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
+  var dio = Dio();
+  dio.options
+    ..baseUrl = 'http://https://my-shop-with-flutter-backend-default-rtdb.firebaseio.com/products'
+    ..connectTimeout = 5000
+    ..receiveTimeout = 5000
+    ..validateStatus = (int? status) {
+      return status != null && status > 0;
+    }
+    ..headers = {
+      HttpHeaders.userAgentHeader: 'dio',
+      'common-header': 'xx',
+    };
+
   runApp(const MyApp());
 }
 
