@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:my_shop/exceptions/auth_exceptions.dart';
 
 class Auth with ChangeNotifier {
   var dio = Dio();
@@ -13,13 +14,19 @@ class Auth with ChangeNotifier {
       "password": password,
       "returnSecureToken": true
     });
+
+    final body = response.data;
+
+    if (body['error'] != null) {
+      throw AuthExceptions(body['error']['message']);
+    }
   }
 
   Future<void> signup(String email, String password) async {
-    _authenticate(email, password, 'signUp');
+    return _authenticate(email, password, 'signUp');
   }
 
   Future<void> login(String email, String password) async {
-    _authenticate(email, password, 'signInWithPassword');
+    return _authenticate(email, password, 'signInWithPassword');
   }
 }
