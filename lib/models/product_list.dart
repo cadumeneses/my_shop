@@ -8,8 +8,9 @@ import 'package:my_shop/utils/constants.dart';
 
 class ProductList with ChangeNotifier {
   var dio = Dio();
+  String _token;
 
-  final List<Product> _items = [];
+  List<Product> _items = [];
 
   List<Product> get items => [..._items];
 
@@ -20,9 +21,11 @@ class ProductList with ChangeNotifier {
     return _items.length;
   }
 
+  ProductList(this._token, this._items);
+
   Future<void> loadProducts() async {
     _items.clear();
-    final response = await dio.get('${Constants.productBaseUrl}.json');
+    final response = await dio.get('${Constants.productBaseUrl}.json?auth=$_token');
     Map<String, dynamic> data = response.data;
     data.forEach((productId, productData) {
       _items.add(
@@ -59,7 +62,7 @@ class ProductList with ChangeNotifier {
 
   Future<void> addProduct(Product product) async {
     final response = await dio.post(
-      ('${Constants.productBaseUrl}.json'),
+      ('${Constants.productBaseUrl}.json?auth=$_token'),
       data: {
         "title": product.title,
         "description": product.description,
@@ -85,7 +88,7 @@ class ProductList with ChangeNotifier {
     int index = _items.indexWhere((p) => p.id == product.id);
     if (index >= 0) {
       await dio.patch(
-        '${Constants.productBaseUrl}/${product.id}.json',
+        '${Constants.productBaseUrl}/${product.id}.json?auth=$_token',
         data: {
           "title": product.title,
           "description": product.description,
@@ -101,7 +104,7 @@ class ProductList with ChangeNotifier {
   Future<void> deleteProduct(Product product) async {
     int index = _items.indexWhere((p) => p.id == product.id);
     if (index >= 0) {
-      await dio.delete('${Constants.productBaseUrl}/${product.id}.json');
+      await dio.delete('${Constants.productBaseUrl}/${product.id}.json?auth=$_token');
     }
     _items.remove(product);
     notifyListeners();

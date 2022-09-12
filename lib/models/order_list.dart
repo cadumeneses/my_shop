@@ -8,8 +8,11 @@ import 'cart.dart';
 
 class OrderList with ChangeNotifier {
   var dio = Dio();
+  final String _token;
+
   List<Order> _items = [];
 
+  OrderList(this._token, this._items);
   List<Order> get items {
     return [..._items];
   }
@@ -19,12 +22,12 @@ class OrderList with ChangeNotifier {
   }
 
   Future<void> loadOrders() async {
-    _items.clear();
-    final response = await dio.get('${Constants.orderBaseUrl}.json');
-    print(response.data);
+    List<Order> items = [];
+    final response =
+        await dio.get('${Constants.orderBaseUrl}.json?auth=$_token');
     Map<String, dynamic> data = response.data;
     data.forEach((orderId, orderData) {
-      _items.add(
+      items.add(
         Order(
           id: orderId,
           total: orderData['total'],
@@ -40,6 +43,7 @@ class OrderList with ChangeNotifier {
           date: DateTime.parse(orderData['date']),
         ),
       );
+      _items = items.reversed.toList();
       notifyListeners();
     });
   }
@@ -47,7 +51,7 @@ class OrderList with ChangeNotifier {
   Future<void> addOrder(Cart cart) async {
     final date = DateTime.now();
     final response = await dio.post(
-      ('${Constants.orderBaseUrl}.json'),
+      ('${Constants.orderBaseUrl}.json?auth=$_token'),
       data: {
         "total": cart.totalAmount,
         "date": date.toIso8601String(),
