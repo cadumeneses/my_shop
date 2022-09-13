@@ -12,7 +12,10 @@ class OrderList with ChangeNotifier {
 
   List<Order> _items = [];
 
-  OrderList(this._token, this._items);
+  OrderList([
+    this._token = '',
+    this._items = const [],
+  ]);
   List<Order> get items {
     return [..._items];
   }
@@ -24,7 +27,7 @@ class OrderList with ChangeNotifier {
   Future<void> loadOrders() async {
     List<Order> items = [];
     final response =
-        await dio.get('${Constants.orderBaseUrl}.json?auth=$_token');
+        await dio.get('${Constants.orderBaseUrl}?auth=$_token');
     Map<String, dynamic> data = response.data;
     data.forEach((orderId, orderData) {
       items.add(
@@ -51,7 +54,7 @@ class OrderList with ChangeNotifier {
   Future<void> addOrder(Cart cart) async {
     final date = DateTime.now();
     final response = await dio.post(
-      ('${Constants.orderBaseUrl}.json?auth=$_token'),
+      ('${Constants.orderBaseUrl}?auth=$_token'),
       data: {
         "total": cart.totalAmount,
         "date": date.toIso8601String(),

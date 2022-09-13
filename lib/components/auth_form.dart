@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../models/auth.dart';
 
-enum AuthMode { Singup, Login }
+enum AuthMode { singup, login }
 
 class AuthForm extends StatefulWidget {
   const AuthForm({super.key});
@@ -18,21 +18,21 @@ class _AuthFormState extends State<AuthForm> {
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
 
-  AuthMode _authMode = AuthMode.Login;
-  Map<String, String> _authData = {
+  AuthMode _authMode = AuthMode.login;
+  final Map<String, String> _authData = {
     'email': '',
     'password': '',
   };
 
-  bool _isLogin() => _authMode == AuthMode.Login;
-  bool _isSingup() => _authMode == AuthMode.Singup;
+  bool _isLogin() => _authMode == AuthMode.login;
+  bool _isSingup() => _authMode == AuthMode.singup;
 
   void _switchAuthMode() {
     setState(() {
       if (_isLogin()) {
-        _authMode = AuthMode.Singup;
+        _authMode = AuthMode.singup;
       } else {
-        _authMode = AuthMode.Login;
+        _authMode = AuthMode.login;
       }
     });
   }
@@ -46,7 +46,7 @@ class _AuthFormState extends State<AuthForm> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text('Close'),
+            child: const Text('Close'),
           ),
         ],
       ),
@@ -79,7 +79,7 @@ class _AuthFormState extends State<AuthForm> {
       }
     } on AuthExceptions catch (error) {
       _showErrorDialog(error.toString());
-    }catch(error){
+    } catch (error) {
       _showErrorDialog('Ocorreu um erro inesperado!');
     }
 
@@ -106,15 +106,13 @@ class _AuthFormState extends State<AuthForm> {
                 decoration: const InputDecoration(labelText: 'E-mail'),
                 keyboardType: TextInputType.emailAddress,
                 onSaved: (email) => _authData['email'] = email ?? '',
-                validator: _isLogin()
-                    ? null
-                    : (_email) {
-                        final email = _email ?? '';
-                        if (email.trim().isEmpty || !email.contains('@')) {
-                          return 'Enter a valid e-mail';
-                        }
-                        return null;
-                      },
+                validator: (_email) {
+                  final email = _email ?? '';
+                  if (email.trim().isEmpty || !email.contains('@')) {
+                    return 'Enter a valid e-mail';
+                  }
+                  return null;
+                },
               ),
               TextFormField(
                 decoration: const InputDecoration(labelText: 'Password'),
@@ -136,13 +134,15 @@ class _AuthFormState extends State<AuthForm> {
                       const InputDecoration(labelText: 'Confirm Password'),
                   keyboardType: TextInputType.emailAddress,
                   obscureText: true,
-                  validator: (_password) {
-                    final password = _password ?? '';
-                    if (password != _passwordController.text) {
-                      return 'Passwords don\'t match';
-                    }
-                    return null;
-                  },
+                  validator: _isLogin()
+                      ? null
+                      : (_password) {
+                          final password = _password ?? '';
+                          if (password != _passwordController.text) {
+                            return 'Passwords don\'t match';
+                          }
+                          return null;
+                        },
                 ),
               const SizedBox(height: 20),
               if (_isLoading)
@@ -160,7 +160,7 @@ class _AuthFormState extends State<AuthForm> {
                     ),
                   ),
                   child: Text(
-                    _authMode == AuthMode.Login ? 'Login' : 'Sign Up',
+                    _authMode == AuthMode.login ? 'Login' : 'Sign Up',
                   ),
                 ),
               const Spacer(),

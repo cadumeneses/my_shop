@@ -12,23 +12,15 @@ import 'package:my_shop/pages/orders_page.dart';
 import 'package:my_shop/pages/product_detail_page.dart';
 import 'package:my_shop/pages/product_form_page.dart';
 import 'package:my_shop/pages/product_page.dart';
+import 'package:my_shop/services/dio.dart';
+import 'package:my_shop/services/inject.dart';
 import 'package:my_shop/utils/app_routes.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
-  var dio = Dio();
-  dio.options
-    ..baseUrl =
-        'http://https://my-shop-with-flutter-backend-default-rtdb.firebaseio.com/products'
-    ..connectTimeout = 5000
-    ..receiveTimeout = 5000
-    ..validateStatus = (int? status) {
-      return status != null && status > 0;
-    }
-    ..headers = {
-      HttpHeaders.userAgentHeader: 'dio',
-      'common-header': 'xx',
-    };
+  WidgetsFlutterBinding.ensureInitialized();
+
+  inject();
 
   runApp(const MyApp());
 }
@@ -44,14 +36,16 @@ class MyApp extends StatelessWidget {
           create: (_) => Auth(),
         ),
         ChangeNotifierProxyProvider<Auth, ProductList>(
-          create: (_) => ProductList('', []),
+          create: (_) => ProductList(),
           update: (ctx, auth, previous) {
-            return ProductList(auth.token ?? '', previous?.items ?? []);
+            return ProductList(
+                auth.token ?? '', auth.uid ?? '', previous?.items ?? []);
           },
         ),
         ChangeNotifierProxyProvider<Auth, OrderList>(
-          create: (_) => OrderList('', []),
-          update: (ctx, auth, previous) => OrderList(auth.token ?? '', previous?.items ?? []),
+          create: (_) => OrderList(),
+          update: (ctx, auth, previous) =>
+              OrderList(auth.token ?? '', previous?.items ?? []),
         ),
         ChangeNotifierProvider(
           create: (_) => Cart(),
