@@ -23,37 +23,44 @@ class AuthPage extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(
-            width: double.infinity,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                  margin: const EdgeInsets.only(bottom: 20),
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 10,
-                    horizontal: 70,
-                  ),
-                  transform: Matrix4.rotationZ(-8 * pi / 180)..translate(-10.0),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: Colors.deepOrange.shade900,
-                    boxShadow: const [
-                      BoxShadow(
-                          blurRadius: 8,
-                          color: Colors.black26,
-                          offset: Offset(0, 2)),
-                    ],
-                  ),
-                  child: const Text(
-                    'My shop',
-                    style: TextStyle(
-                        fontFamily: 'Anton', fontSize: 45, color: Colors.white),
-                  ),
+          Center(
+            child: SingleChildScrollView(
+              child: SizedBox(
+                width: double.infinity,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 20),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 10,
+                        horizontal: 70,
+                      ),
+                      transform: Matrix4.rotationZ(-8 * pi / 180)
+                        ..translate(-10.0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: Colors.deepOrange.shade900,
+                        boxShadow: const [
+                          BoxShadow(
+                              blurRadius: 8,
+                              color: Colors.black26,
+                              offset: Offset(0, 2)),
+                        ],
+                      ),
+                      child: const Text(
+                        'My shop',
+                        style: TextStyle(
+                            fontFamily: 'Anton',
+                            fontSize: 45,
+                            color: Colors.white),
+                      ),
+                    ),
+                    const AuthForm(),
+                  ],
                 ),
-                const AuthForm(),
-              ],
+              ),
             ),
           )
         ],
