@@ -15,6 +15,7 @@ import 'package:my_shop/pages/product_page.dart';
 import 'package:my_shop/services/dio.dart';
 import 'package:my_shop/services/inject.dart';
 import 'package:my_shop/utils/app_routes.dart';
+import 'package:my_shop/utils/custom_routes.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -62,7 +63,13 @@ class MyApp extends StatelessWidget {
                     fontFamily: 'Lato',
                     color: Colors.white,
                   ),
-                )),
+                ),
+            pageTransitionsTheme: PageTransitionsTheme(
+              builders: {
+                TargetPlatform.iOS: CustomPageTransitionsBuilder(),
+                TargetPlatform.android: CustomPageTransitionsBuilder(),
+              },
+            )),
         // home: const ProductsOverviewPage(),
         routes: {
           AppRoutes.authOrHome: (ctx) => const AuthOrHomePage(),
